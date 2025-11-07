@@ -158,10 +158,10 @@ reg [19:0] hum_raw;
 reg [19:0] temp_raw;
 
 always @(posedge clock) begin
-
     s_cmd_valid = 0;
     s_cmd_start = 0;
     s_cmd_write = 0;
+    s_cmd_write_multiple = 0;
     s_cmd_read = 0;
     s_data_tvalid = 0;
     m_data_tready = 0;
@@ -279,7 +279,7 @@ always @(posedge clock) begin
         INIT_SENSOR: begin
             s_cmd_address = 7'h38;
             s_cmd_start = 1;
-            s_cmd_write = 1;
+            s_cmd_write_multiple = 1;
             s_cmd_valid = 1;
 
             if (missed_ack) begin
@@ -361,7 +361,7 @@ always @(posedge clock) begin
 
         CHECK_MEASURE: begin
             if (status_byte[7] == 0) begin
-                state <= START_READ_DATA;
+                state <= READ_BYTE0;
             end
             else begin
                 state <= WAIT_MEASURE;
@@ -381,7 +381,8 @@ always @(posedge clock) begin
 
         READ_BYTE0: begin 
             m_data_tready = 1;
-
+            s_cmd_read = 1;
+            s_cmd_valid = 1;
             if(m_data_tvalid) begin
                 byte0 <= m_data_tdata;
                 state <= READ_BYTE1;
@@ -390,6 +391,8 @@ always @(posedge clock) begin
 
         READ_BYTE1: begin 
             m_data_tready = 1;
+            s_cmd_read = 1;
+            s_cmd_valid = 1;
             if(m_data_tvalid) begin
                 byte1 <= m_data_tdata;
                 state <= READ_BYTE2 ;
@@ -398,6 +401,8 @@ always @(posedge clock) begin
 
         READ_BYTE2: begin 
             m_data_tready = 1;
+            s_cmd_read = 1;
+            s_cmd_valid = 1;
             if(m_data_tvalid) begin
                 byte2 <= m_data_tdata;
                 state <= READ_BYTE3 ;
@@ -406,6 +411,8 @@ always @(posedge clock) begin
 
         READ_BYTE3: begin 
             m_data_tready = 1;
+            s_cmd_read = 1;
+            s_cmd_valid = 1;
             if(m_data_tvalid) begin
                 byte3 <= m_data_tdata;
                 state <= READ_BYTE4 ;
@@ -414,6 +421,8 @@ always @(posedge clock) begin
 
         READ_BYTE4: begin 
             m_data_tready = 1;
+            s_cmd_read = 1;
+            s_cmd_valid = 1;
             if(m_data_tvalid) begin
                 byte4 <= m_data_tdata;
                 state <= READ_BYTE5 ;
@@ -422,6 +431,9 @@ always @(posedge clock) begin
 
         READ_BYTE5: begin 
             m_data_tready = 1;
+            s_cmd_read = 1;
+            s_cmd_valid = 1;
+            s_cmd_stop = 1 ;
             if(m_data_tvalid) begin
                 byte5 <= m_data_tdata;
                 state <= PROCESS_DATA;
@@ -447,6 +459,5 @@ always @(posedge clock) begin
     end
 end
 endmodule
-
 
 
