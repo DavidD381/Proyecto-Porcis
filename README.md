@@ -28,9 +28,27 @@ del sensor, pero después de mucho tiempo perdido y días sin que nada funcionar
 Se abandonó la idea del test y se empezó a probar directamente con el sensor y a hacer el debug por medio de los leds, pero como era de esperarse, no hubo ningún tipo de avance y solo se perdió tiempo.  
 El problema ya era claro, no se sabe que está pasando, nace la necesidad de ver las señales. Por suerte esto se puede hacer por medio de un Analizador Lógico, que por fortuna no es muy caro.  
 Algunos días después llegó el Analizador lógico, se podría pensar que ahora todo sería más fácil y efectivamente, se pudo ver que estaba sucediendo, la escritura de datos estaba atascada, el sensor pedía que se le escribieran 3 bytes seguidos, por fortuna la
-libería de Alex ya contaba con una función para este problema el write_multiple, se superó el primer atasco, luego vendría otro parecido, el nuevo problema era leer varios bytes seguidos, pero ya no había una función para esto, según la librería si se podías lograr
+libería de Alex ya contaba con una función para este problema el write_multiple, se superó el primer atasco, luego vendría otro parecido, el nuevo problema era leer varios bytes seguidos, pero ya no había una función para esto, según la librería si se podía lograr
 de alguna manera, pero después de varias pruebas y mucho tiempo perdido hubo que hacer otro cambio de enfoque que en principio era muy mala idea, editar la librería de Alex para crear una función parecida a write_multiple, pero en este caso para leer, es decir,
-un read_multiple. Este paso se hizo completamente con la inteligencia artificial GEMINI.
+un read_multiple. Este paso se hizo completamente con la inteligencia artificial GEMINI. Por fortuna, fue la decisión correcta.
+
+### PRIMER AVANCE
+Después de implementar esta mala idea de modificar la libería, se obtuvo el primer avance, la máquina de estados se recorrió por completo y entró en bucle, leyendo los datos del sensor. Después de tantas horas de trabajo y semanas sin ningún tipo de avance
+la felicidad y emoción no se hizo esperar, los datos por fin se estaban presentando en el 7 segmentos. Este avance se puede ver en la parte 3 tanto del i2c_master como del aht20_controller.
+
+### EL MISMO SUFRIMIENTO PARA LA LCD?
+Debido a las restricciones del no uso de 7 segmentos, era necesaria la implementación de la pantalla LCD, que en un principio se compró con su módulo PCF8574T soldado, por lo que el problema era el mismo que para el sensor, implemetar un lcd_controller. 
+NUevamente no había información sobre como hacerlo, solo la había para el uso con microcontroladores o sin el I2C. Para evitar todo el problema de lo sucedido con el sensor se estaba pensando en comprar una nueva pantalla sin el módulo y utilizar todos los pines,
+pero el ser humano aprende de sus errores, así que empezó nuevamente la travesía, pero ahora no desde 0. 
+
+### AVANZANDO RÁPIDAMENTE
+Después de toda la experiencia adquirida con el sensor, se empezó leyendo el datasheet tanto de la LCD como del módulo PCF8574T, además de la librería disponible para arduino. Después de comprender el funcionamiento se empezó a desarrollar el módulo, todo indicaba que iba a ser un problema, salieron más de 70 estados, solo para la inicialización de la pantalla, aunque la mayoría de estados eran prácticamente iguales. Después de solucionar un montón de errores de sintaxis, empezó el debug, al primer intento la máquina casi se recorre por completo, había una dirección mal, la máquina funcionó perfectamente y sin mayor esfuerzo. Esta parte solo mostraba un caractér, pero la comunicación ya estaba, luego se implementó un módulo manager, que básicamente le indicaba a la pantalla que mostrar, esta parte dió un poco más de problema, por cosas de sincronía y funciones necesarias para la pantalla, pero en general fue bastante rápido. Este módulo ya está, pero se subirá próximamente.
+![LCD mostrando temperatura y humedad](./LCD_TEM&HUM.jpeg)
+### EN DESARROLLO
+
+
+
+
 
 
 
